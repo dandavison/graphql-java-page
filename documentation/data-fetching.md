@@ -9,13 +9,13 @@ description: How graphql-java fetches data for each of the fields in a query
 
 Each field in graphql has a `graphql.schema.DataFetcher` associated with it.
 
-Some fields will use specialised data fetcher code that knows how to go to a database say to get field information while
-most simply take data from the returned in memory objects using the field name and Plain Old Java Object (POJO) patterns
+Some fields will use specialised data fetcher code that knows how to go to a source such as a database to fetch the data, while
+most simply take data from the returned in-memory objects using the field name and Plain Old Java Object (POJO) patterns
 to get the data.
 
-Note : Data fetchers are some times called "resolvers" in other graphql implementations.
+Note: data fetchers are sometimes called "resolvers" in other graphql implementations.
 
-So imagine a type declaration like the one below :
+Consider a type declaration like the one below:
 
 ```graphql
 type Query {
@@ -35,10 +35,10 @@ type Product {
 The `Query.products` field has a data fetcher, as does each field in the type ``Product``.
 
 The data fetcher on the ``Query.products`` field is likely to be a more complex data fetcher, containing code that
-goes to a database say to get a list of ``Product`` objects.  It takes an optional ``match`` argument and hence can filter these
-product results if the client specified it.
+goes to a database to get a list of ``Product`` objects.  It takes an optional ``match`` argument and hence can filter these
+product results.
 
-It might look like the following :
+It might look like the following:
 
 ```java
 DataFetcher productsDataFetcher = new DataFetcher<List<ProductDTO>>() {
@@ -58,12 +58,12 @@ DataFetcher productsDataFetcher = new DataFetcher<List<ProductDTO>>() {
 };
 ```
 
-Each ``DataFetcher`` is passed a ``graphql.schema.DataFetchingEnvironment`` object which contains what field is being fetched, what
-arguments have been supplied to the field and other information such as the field's type, its parent type, the query root object or the query
+Each ``DataFetcher`` is passed a ``graphql.schema.DataFetchingEnvironment`` object which contains the field that is being fetched, the
+arguments that have been supplied to the field, and other information such as the field's type, its parent type, the query root object, or the query
 context object.
 
-Note how the data fetcher code above uses the ``context`` object as an application specific security handle to get access
-to the database.  This is a common technique to provide lower layer calling context.
+Note how the data fetcher code above uses the ``context`` object as an application-specific security handle to get access
+to the database.  This is a common technique to provide lower-layer calling context.
 
 Once we have a list of ``ProductDTO`` objects we typically don't need specialised data fetchers on each field.  graphql-java
 ships with a smart ``graphql.schema.PropertyDataFetcher`` that knows how to follow POJO patterns based
@@ -73,9 +73,9 @@ POJO method to get the data.
 
 ``graphql.schema.PropertyDataFetcher`` is the data fetcher that is automatically associated with each field by default.
 
-You can however still get access to the ``graphql.schema.DataFetchingEnvironment`` in your DTO methods.  This allows you to
-tweak values before sending them out.  For example above we have a ``launchDate`` field that takes an optional ``dateFormat``
-argument.  We can have the ProductDTO have logic that applies this date formatting to the desired format.
+You can however still get access to the ``graphql.schema.DataFetchingEnvironment`` in your DTO methods. This allows you to
+tweak values before sending them out. For example, above we have a ``launchDate`` field that takes an optional ``dateFormat``
+argument. The `ProductDTO` can have logic that applies this date formatting to the desired format.
 
 ```java
 class ProductDTO {
@@ -104,11 +104,11 @@ class ProductDTO {
 
 ## Customising PropertyDataFetcher
 
-As mentioned above ``graphql.schema.PropertyDataFetcher`` is the default data fetcher for fields in graphql-java and it will use standard patterns for fetching
+As mentioned above, ``graphql.schema.PropertyDataFetcher`` is the default data fetcher for fields in graphql-java and it will use standard patterns for fetching
 object field values.
 
-It supports a ``POJO`` approach and a ``Map`` approach in a Java idiomatic way.  By default it assumes that for a graphql field ``fieldX`` it can find a POJO property
-called ``fieldX`` or a map key called ``fieldX`` if the backing object is a ``Map``.
+It supports a ``POJO`` approach and a ``Map`` approach in a Java-idiomatic way: by default it assumes that for a graphql field ``fieldX`` it can find a POJO property
+called ``fieldX``, or a map key called ``fieldX`` if the backing object is a ``Map``.
 
 However you may have small differences between your graphql schema naming and runtime object naming.  For example imagine that ``Product.description`` is actually
 represented as ``getDesc()`` in the runtime backing Java object.
@@ -135,7 +135,7 @@ Every data fetcher is passed a ``graphql.schema.DataFetchingEnvironment`` object
 and what arguments have been provided.  Here are some of the more interesting parts of ``DataFetchingEnvironment``.
 
 * ``<T> T getSource()`` - the ``source`` object is used to get information for a field.  Its the object that is the result
-of the parent field fetch.  In the common case it is an in memory DTO object and hence simple POJO getters will be used for fields values.  In more complex cases, you may examine it to know
+of the parent field fetch.  In the common case it is an in-memory DTO object and hence simple POJO getters will be used for fields values.  In more complex cases, you may examine it to know
 how to get the specific information for the current field.  As the graphql field tree is executed, each returned field value
 becomes the ``source`` object for child fields.
 
@@ -154,11 +154,11 @@ system designer is how you will use context in your fetchers if at all.  Some pe
 data fetchers automatically and hence don't need to use this.
 
 
-* ``ExecutionStepInfo getExecutionStepInfo()`` - the field type information is a catch all bucket of field type information that is built up as
-the query is executed.  The following section explains more on this.
+* ``ExecutionStepInfo getExecutionStepInfo()`` - the field type information is a catch-all bucket of field type information that is built up as
+the query is executed. The following section contains more explanation of this.
 
-* ``DataFetchingFieldSelectionSet getSelectionSet()`` - the selection set represents the child fields that have been "selected" under neath the
-currently executing field. This can be useful to help look ahead to see what sub field information a client wants.  The following section explains more on this.
+* ``DataFetchingFieldSelectionSet getSelectionSet()`` - the selection set represents the child fields that have been "selected" underneath the
+currently executing field. This can be useful to help look ahead to see what subfield information a client wants.  The following section contains more explanation of this.
 
 * ``ExecutionId getExecutionId()`` - each query execution is given a unique id.  You can use this perhaps on logs to tag each individual
 query.
@@ -189,9 +189,9 @@ query {
 }
 ```
 
-The sub fields here of the ``products`` field represent the selection set of that field.  It can be useful to know what sub selection has been asked for
-so the data fetcher can optimise the data access queries.  For example an SQL backed system may be able to use the field sub selection to
+The subfields here of the ``products`` field represent the selection set of that field. It can be useful to know what subselection has been asked for
+so the data fetcher can optimise the data access queries. For example an SQL-backed system may be able to use the field subselection to
 only retrieve the columns that have been asked for.
 
-In the example above we have asked for ``sellingLocations`` information and hence we may be able to make an more efficient data access query where
+In the example above we have asked for ``sellingLocations`` information and hence we may be able to make a more efficient data access query, where
 we ask for product information and selling location information at the same time.
